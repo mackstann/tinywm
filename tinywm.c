@@ -1,10 +1,7 @@
-/* TinyWM (C) 2005 Nick Welch <mack@incise.org>
+/* TinyWM is written by Nick Welch <mack@incise.org>, 2005.
  *
- * Use of the works is permitted provided that this instrument
- * is retained with the works, so that any entity that uses the
- * works is notified of this instrument.
- *
- * DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY. */
+ * This software is in the public domain
+ * and is provided AS IS, with NO WARRANTY. */
 
 #include <X11/Xlib.h>
 
@@ -18,7 +15,7 @@ int main()
     XButtonEvent start;
     XEvent ev;
 
-    if(!(dpy = XOpenDisplay(0))) return 1;
+    if(!(dpy = XOpenDisplay(0x0))) return 1;
 
     root = DefaultRootWindow(dpy);
 

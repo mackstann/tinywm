@@ -1,10 +1,7 @@
-/* TinyWM (C) 2005 Nick Welch <mack@incise.org>
+/* TinyWM is written by Nick Welch <mack@incise.org>, 2005.
  *
- * Use of the works is permitted provided that this instrument
- * is retained with the works, so that any entity that uses the
- * works is notified of this instrument.
- *
- * DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY. */
+ * This software is in the public domain
+ * and is provided AS IS, with NO WARRANTY. */
 
 /* much of tinywm's purpose is to serve as a very basic example of how to do X
  * stuff and/or understand window managers, so i wanted to put comments in the
@@ -40,7 +37,7 @@ int main()
 
 
     /* return failure status if we can't connect */
-    if(!(dpy = XOpenDisplay(0))) return 1;
+    if(!(dpy = XOpenDisplay(0x0))) return 1;
 
     /* you'll usually be referencing the root window a lot.  this is a somewhat
      * naive approach that will only work on the default screen.  most people

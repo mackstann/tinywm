@@ -1,10 +1,7 @@
-# TinyWM (C) 2005 Nick Welch <mack@incise.org>
+# TinyWM is written by Nick Welch <mack@incise.org>, 2005.
 #
-# Use of the works is permitted provided that this instrument
-# is retained with the works, so that any entity that uses the
-# works is notified of this instrument.
-#
-# DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
+# This software is in the public domain
+# and is provided AS IS, with NO WARRANTY.
 
 from Xlib.display import Display
 from Xlib import X, XK
