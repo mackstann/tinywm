@@ -11,7 +11,7 @@ Files:
   Makefile: highly advanced build system
   tinywm.c: the code
   annotated.c: same, but with tons of rambling comments about everything
-  tinywm.py: a python version (requires python-xlib)
+  tinywm.py: a python version (requires CVS python-xlib due to a bug)
 
 Usage:
 
