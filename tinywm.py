@@ -17,7 +17,7 @@ root.grab_button(3, X.Mod1Mask, 1, X.ButtonPressMask,
         X.GrabModeAsync, X.GrabModeAsync, X.NONE, X.NONE)
 
 while 1:
-    ev = root.display.next_event()
+    ev = dpy.next_event()
 
     if ev.type == X.KeyPress and ev.child != X.NONE:
         ev.window.circulate(X.RaiseLowest)
