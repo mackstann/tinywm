@@ -6,6 +6,11 @@ to move, resize, focus (sloppy), and raise windows -- that's it!  TinyWM's main
 purpose is to serve as a quick example of some window manager programming
 basics.
 
+Files:
+  Makefile: highly advanced build system
+  tinywm.c: the code
+  annotated.c: same, but with tons of rambling comments about everything
+
 Usage:
 
   Focus follows pointer.
