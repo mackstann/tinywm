@@ -1,0 +1,20 @@
+TinyWM (C) 2005 Nick Welch
+
+TinyWM is a ridiculously tiny window manager implemented in nearly as few lines
+of C as possible, without being obfuscated or entirely useless. It allows you
+to move, resize, focus (sloppy), and raise windows -- that's it!  TinyWM's main
+purpose is to serve as a quick example of some window manager programming
+basics.
+
+Usage:
+
+  Focus follows pointer.
+  Alt+Button1, drag: interactive window move
+  Alt+Button3, drag: interactive window resize
+  Alt+F1: raise focused window
+
+Contact:
+
+  Nick Welch <mack@incise.org>
+
+
