@@ -11,6 +11,7 @@ Files:
   Makefile: highly advanced build system
   tinywm.c: the code
   annotated.c: same, but with tons of rambling comments about everything
+  tinywm.py: a python version (requires python-xlib)
 
 Usage:
 
@@ -22,5 +23,4 @@ Usage:
 Contact:
 
   Nick Welch <mack@incise.org>
-
 

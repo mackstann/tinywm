@@ -27,10 +27,20 @@
 
 int main()
 {
-    Display * dpy = XOpenDisplay(0); /* returns NULL if it can't connect to X */
+    Display * dpy;
     Window root;
+    XWindowAttributes attr;
 
-    if(!dpy) return 1; /* return failure status if we can't connect */
+    /* we use this to save the pointer's state at the beginning of the
+     * move/resize.
+     */
+    XButtonEvent start;
+
+    XEvent ev;
+
+
+    /* return failure status if we can't connect */
+    if(!(dpy = XOpenDisplay(0))) return 1;
 
     /* you'll usually be referencing the root window a lot.  this is a somewhat
      * naive approach that will only work on the default screen.  most people
@@ -81,17 +91,6 @@ int main()
 
     for(;;)
     {
-        /* i declare these as static down here because i hate declaring things
-         * in a completely different area from where they're used
-         */
-        static XWindowAttributes attr;
-
-        /* we use this to save the pointer's state at the beginning of the
-         * move/resize.
-         */
-        static XButtonEvent start;
-        static XEvent ev;
-
         /* this is the most basic way of looping through X events; you can be
          * more flexible by using XPending(), or ConnectionNumber() along with
          * select() (or poll() or whatever floats your boat).
