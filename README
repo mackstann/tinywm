@@ -7,6 +7,7 @@ purpose is to serve as a quick example of some window manager programming
 basics.
 
 Files:
+
   Makefile: highly advanced build system
   tinywm.c: the code
   annotated.c: same, but with tons of rambling comments about everything
