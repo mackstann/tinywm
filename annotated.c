@@ -159,12 +159,14 @@ int main(void)
              * for window managers with things like desktop switching, it can
              * also be useful to compress EnterNotify events, so that you don't
              * get "focus flicker" as windows shuffle around underneath the
-             * pointer. */
+             * pointer.
+             */
             while(XCheckTypedEvent(dpy, MotionNotify, &ev));
 
             /* now we use the stuff we saved at the beginning of the
              * move/resize and compare it to the pointer's current position to
-             * determine what the window's new size or position should be. */
+             * determine what the window's new size or position should be.
+             */
             if(mode == MOVING)
                 XMoveWindow(dpy, ev.xmotion.window,
                         initial.x + ev.xmotion.x_root - initialpx,
@@ -177,7 +179,8 @@ int main(void)
              *
              * even worse is if we get "lucky" and hit a width or height of
              * exactly zero, triggering an X error.  so we specify a minimum
-             * width/height of 1 pixel. */
+             * width/height of 1 pixel.
+             */
             else /* mode == RESIZING */
                 XResizeWindow(dpy, ev.xmotion.window,
                         MIN(1, initial.width + ev.xmotion.x_root - initialpx),
@@ -185,7 +188,8 @@ int main(void)
         }
         /* like motion notifies, the only way we'll receive a button release is
          * during a move/resize, due to our pointer grab.  this ends the
-         * move/resize. */
+         * move/resize.
+         */
         else if(ev.type == ButtonRelease)
         {
             mode = NORMAL;
@@ -194,7 +198,8 @@ int main(void)
         /* this is our keybinding for raising windows.  as i saw someone
          * mention on the ratpoison wiki, it is pretty stupid; however, i
          * wanted to fit some sort of keyboard binding in here somewhere, and
-         * this was the best fit for it. */
+         * this was the best fit for it.
+         */
         else if(ev.type == KeyPress && ev.xkey.subwindow != None &&
                 ev.xkey.keycode == f1 && ev.xkey.state == Mod1Mask)
             XRaiseWindow(dpy, ev.xkey.subwindow);
