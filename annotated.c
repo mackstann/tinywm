@@ -25,7 +25,6 @@
 int main()
 {
     Display * dpy;
-    Window root;
     XWindowAttributes attr;
 
     /* we use this to save the pointer's state at the beginning of the
@@ -35,11 +34,10 @@ int main()
 
     XEvent ev;
 
-
     /* return failure status if we can't connect */
     if(!(dpy = XOpenDisplay(0x0))) return 1;
 
-    /* you'll usually be referencing the root window a lot.  this is a somewhat
+    /* we use DefaultRootWindow to get the root window, which is a somewhat
      * naive approach that will only work on the default screen.  most people
      * only have one screen, but not everyone.  if you run multi-head without
      * xinerama then you quite possibly have multiple screens. (i'm not sure
@@ -53,7 +51,6 @@ int main()
      * if they set $DISPLAY to ":0.foo", then our default screen number is
      * whatever they specify "foo" as.
      */
-    root = DefaultRootWindow(dpy);
 
     /* you could also include keysym.h and use the XK_F1 constant instead of
      * the call to XStringToKeysym, but this method is more "dynamic."  imagine
@@ -70,8 +67,8 @@ int main()
      * to X.  so we never want to hard-code keycodes, because they can and will
      * differ between systems.
      */
-    XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask, root,
-            True, GrabModeAsync, GrabModeAsync);
+    XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask,
+            DefaultRootWindow(dpy), True, GrabModeAsync, GrabModeAsync);
 
     /* XGrabKey and XGrabButton are basically ways of saying "when this
      * combination of modifiers and key/button is pressed, send me the events."
@@ -81,10 +78,10 @@ int main()
      * XSelectInput with KeyPressMask/ButtonPressMask/etc to catch all events
      * of those types and filter them as you receive them.
      */
-    XGrabButton(dpy, 1, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
-            GrabModeAsync, None, None);
-    XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
-            GrabModeAsync, None, None);
+    XGrabButton(dpy, 1, Mod1Mask, DefaultRootWindow(dpy), True,
+            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+    XGrabButton(dpy, 3, Mod1Mask, DefaultRootWindow(dpy), True,
+            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
 
     for(;;)
     {
@@ -110,13 +107,6 @@ int main()
             XRaiseWindow(dpy, ev.xkey.subwindow);
         else if(ev.type == ButtonPress && ev.xbutton.subwindow != None)
         {
-            /* now we take command of the pointer, looking for motion and
-             * button release events.
-             */
-            XGrabPointer(dpy, ev.xbutton.subwindow, True,
-                    PointerMotionMask|ButtonReleaseMask, GrabModeAsync,
-                    GrabModeAsync, None, None, CurrentTime);
-
             /* we "remember" the position of the pointer at the beginning of
              * our move/resize, and the size/position of the window.  that way,
              * when the pointer moves, we can compare it to our initial data
@@ -129,20 +119,22 @@ int main()
          * a pointer grab and we're in move/resize mode, so we assume that. */
         else if(ev.type == MotionNotify)
         {
-            int xdiff, ydiff;
-
-            /* here we "compress" motion notify events.  if there are 10 of
-             * them waiting, it makes no sense to look at any of them but the
-             * most recent.  in some cases -- if the window is really big or
-             * things are just acting slowly in general -- failing to do this
-             * can result in a lot of "drag lag."
+            /* here we could "compress" motion notify events by doing:
+             *
+             * while(XCheckTypedEvent(dpy, MotionNotify, &ev));
+             *
+             * if there are 10 of them waiting, it makes no sense to look at
+             * any of them but the most recent.  in some cases -- if the window
+             * is really big or things are just acting slowly in general --
+             * failing to do this can result in a lot of "drag lag," especially
+             * if your wm does a lot of drawing and whatnot that causes it to
+             * lag.
              *
              * for window managers with things like desktop switching, it can
              * also be useful to compress EnterNotify events, so that you don't
              * get "focus flicker" as windows shuffle around underneath the
              * pointer.
              */
-            while(XCheckTypedEvent(dpy, MotionNotify, &ev));
 
             /* now we use the stuff we saved at the beginning of the
              * move/resize and compare it to the pointer's current position to
@@ -160,20 +152,14 @@ int main()
              * exactly zero, triggering an X error.  so we specify a minimum
              * width/height of 1 pixel.
              */
-            xdiff = ev.xbutton.x_root - start.x_root;
-            ydiff = ev.xbutton.y_root - start.y_root;
-            XMoveResizeWindow(dpy, ev.xmotion.window,
+            int xdiff = ev.xbutton.x_root - start.x_root;
+            int ydiff = ev.xbutton.y_root - start.y_root;
+            XMoveResizeWindow(dpy, start.subwindow,
                 attr.x + (start.button==1 ? xdiff : 0),
                 attr.y + (start.button==1 ? ydiff : 0),
                 MAX(1, attr.width + (start.button==3 ? xdiff : 0)),
                 MAX(1, attr.height + (start.button==3 ? ydiff : 0)));
         }
-        /* like motion notifies, the only way we'll receive a button release is
-         * during a move/resize, due to our pointer grab.  this ends the
-         * move/resize.
-         */
-        else if(ev.type == ButtonRelease)
-            XUngrabPointer(dpy, CurrentTime);
     }
 }
 
