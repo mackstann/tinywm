@@ -1,4 +1,4 @@
-/* TinyWM (C) 2005 Nick Welch
+/* TinyWM (C) 2005 Nick Welch <mack@incise.org>
  *
  * Use of the works is permitted provided that this instrument
  * is retained with the works, so that any entity that uses the

@@ -1,4 +1,4 @@
-TinyWM (C) 2005 Nick Welch
+TinyWM (C) 2005 Nick Welch <mack@incise.org>
 
 TinyWM is a ridiculously tiny window manager implemented in nearly as few lines
 of C as possible, without being obfuscated or entirely useless. It allows you
@@ -20,7 +20,28 @@ Usage:
   Alt+Button3, drag: interactive window resize
   Alt+F1: raise focused window
 
-Contact:
+Misc:
+  
+  A fella by the name of Trent Buck made a lisp version:
 
-  Nick Welch <mack@incise.org>
+    http://twb.ath.cx/~twb/src/misc/tinywm.lisp
+
+  I have started a wiki about window manager development, although I'm not sure
+  the subject is popular enough for the wiki to keep from dying a horrible
+  death.  In any case, it is here:
+
+    http://riters.com/WMDev/
+
+  Another very small window manager is failsafewm.  Originally I started
+  hacking on it, as there was quite a bit of stuff in it that I thought was
+  unneeded, and I wound up rewriting it from scratch, with just the bare
+  necessities -- that's TinyWM.
+
+    http://freshmeat.net/projects/failsafewm/
+
+  Yet another small -- but in comparison, big -- window manager is aewm.  It's
+  a good example for learning about window management, and the fact that so
+  many WMs have spawned from it is proof.
+
+      http://www.red-bean.com/~decklin/aewm/
 
