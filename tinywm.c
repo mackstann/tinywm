@@ -12,10 +12,13 @@
 
 int main()
 {
-    Display * dpy = XOpenDisplay(0);
+    Display * dpy;
     Window root;
+    XWindowAttributes attr;
+    XButtonEvent start;
+    XEvent ev;
 
-    if(!dpy) return 1;
+    if(!(dpy = XOpenDisplay(0))) return 1;
 
     root = DefaultRootWindow(dpy);
 
@@ -28,10 +31,6 @@ int main()
 
     for(;;)
     {
-        static XWindowAttributes attr;
-        static XButtonEvent start;
-        static XEvent ev;
-
         XNextEvent(dpy, &ev);
         if(ev.type == KeyPress && ev.xkey.subwindow != None)
             XRaiseWindow(dpy, ev.xkey.subwindow);
