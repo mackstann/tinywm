@@ -22,7 +22,7 @@
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-int main()
+int main(void)
 {
     Display * dpy;
     XWindowAttributes attr;
