@@ -5,8 +5,6 @@
  * that uses the works is notified of this instrument.
  *
  * DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
- *
- * [2004, Fair License; rhid.com/fair]
  */
 
 #include <X11/Xlib.h>
