@@ -9,24 +9,16 @@
 
 #include <X11/Xlib.h>
 
-#define MIN(a, b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-Window w;
-int i;         /* <- unused dummies */
-unsigned u;
-
-enum { NORMAL, MOVING, RESIZING };
-
-int main(void)
+int main()
 {
     Display * dpy = XOpenDisplay(0);
-    Window root;
-    KeyCode f1;
 
     if(!dpy) return 1;
 
-    root = DefaultRootWindow(dpy);
-    f1 = XKeysymToKeycode(dpy, XStringToKeysym("F1"));
+    Window root = DefaultRootWindow(dpy);
+    Keycode f1 = XKeysymToKeycode(dpy, XStringToKeysym("F1"));
 
     XGrabKey(dpy, f1, Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
     XGrabButton(dpy, 1, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
@@ -34,39 +26,34 @@ int main(void)
     XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
             GrabModeAsync, None, None);
 
+    XWindowAttributes initial;
+    XEvent ev
+    XButtonEvent start;
     for(;;)
     {
-        static int mode = NORMAL, initialpx, initialpy;
-        static XWindowAttributes initial;
-        static XEvent ev;
         XNextEvent(dpy, &ev);
 
         if(ev.type == ButtonPress && ev.xbutton.subwindow != None)
         {
-            mode = (ev.xbutton.button == 1) ? MOVING : RESIZING;
+            start = ev.xbutton;
             XGrabPointer(dpy, ev.xbutton.subwindow, True,
                     PointerMotionMask|ButtonReleaseMask, GrabModeAsync,
                     GrabModeAsync, None, None, CurrentTime);
-            XQueryPointer(dpy, root, &w, &w, &initialpx, &initialpy, &i, &i,&u);
             XGetWindowAttributes(dpy, ev.xbutton.subwindow, &initial);
         }
         else if(ev.type == MotionNotify)
         {
             while(XCheckTypedEvent(dpy, MotionNotify, &ev));
-            if(mode == MOVING)
-                XMoveWindow(dpy, ev.xmotion.window,
-                        initial.x + ev.xmotion.x_root - initialpx,
-                        initial.y + ev.xmotion.y_root - initialpy);
-            else /* mode == RESIZING */
-                XResizeWindow(dpy, ev.xmotion.window,
-                        MIN(1, initial.width + ev.xmotion.x_root - initialpx),
-                        MIN(1, initial.height + ev.xmotion.y_root - initialpy));
+            int xdiff = ev.xbutton.x_root - start.x_root;
+            int ydiff = ev.xbutton.y_root - start.y_root;
+            XMoveResizeWindow(dpy, ev.xmotion.window,
+                    initial.x + (start.button == 1 ? xdiff : 0),
+                    initial.y + (start.button == 1 ? ydiff : 0),
+                    MAX(1, initial.width + (start.button == 3 ? xdiff : 0))
+                    MAX(1, initial.height + (start.button == 3 ? ydiff : 0)));
         }
         else if(ev.type == ButtonRelease)
-        {
-            mode = NORMAL;
             XUngrabPointer(dpy, CurrentTime);
-        }
         else if(ev.type == KeyPress && ev.xkey.subwindow != None &&
                 ev.xkey.keycode == f1 && ev.xkey.state == Mod1Mask)
             XRaiseWindow(dpy, ev.xkey.subwindow);
