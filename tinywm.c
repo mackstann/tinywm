@@ -18,7 +18,7 @@ int main()
     if(!dpy) return 1;
 
     Window root = DefaultRootWindow(dpy);
-    Keycode f1 = XKeysymToKeycode(dpy, XStringToKeysym("F1"));
+    KeyCode f1 = XKeysymToKeycode(dpy, XStringToKeysym("F1"));
 
     XGrabKey(dpy, f1, Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
     XGrabButton(dpy, 1, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
@@ -27,7 +27,7 @@ int main()
             GrabModeAsync, None, None);
 
     XWindowAttributes initial;
-    XEvent ev
+    XEvent ev;
     XButtonEvent start;
     for(;;)
     {
@@ -49,7 +49,7 @@ int main()
             XMoveResizeWindow(dpy, ev.xmotion.window,
                     initial.x + (start.button == 1 ? xdiff : 0),
                     initial.y + (start.button == 1 ? ydiff : 0),
-                    MAX(1, initial.width + (start.button == 3 ? xdiff : 0))
+                    MAX(1, initial.width + (start.button == 3 ? xdiff : 0)),
                     MAX(1, initial.height + (start.button == 3 ? ydiff : 0)));
         }
         else if(ev.type == ButtonRelease)
