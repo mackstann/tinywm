@@ -10,7 +10,8 @@
  */
 
 #include <X11/Xlib.h>
-#include <X11/keysym.h>
+
+#define MIN(a, b) ((a) > (b) ? (a) : (b))
 
 Window w;
 int i;         /* <- unused dummies */
@@ -27,7 +28,7 @@ int main(void)
     if(!dpy) return 1;
 
     root = DefaultRootWindow(dpy);
-    f1 = XKeysymToKeycode(dpy, XK_F1);
+    f1 = XKeysymToKeycode(dpy, XStringToKeysym("F1"));
 
     XGrabKey(dpy, f1, Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
     XGrabButton(dpy, 1, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
@@ -60,8 +61,8 @@ int main(void)
                         initial.y + ev.xmotion.y_root - initialpy);
             else /* mode == RESIZING */
                 XResizeWindow(dpy, ev.xmotion.window,
-                        initial.width + ev.xmotion.x_root - initialpx,
-                        initial.height + ev.xmotion.y_root - initialpy);
+                        MIN(1, initial.width + ev.xmotion.x_root - initialpx),
+                        MIN(1, initial.height + ev.xmotion.y_root - initialpy));
         }
         else if(ev.type == ButtonRelease)
         {
