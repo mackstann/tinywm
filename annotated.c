@@ -1,11 +1,10 @@
-/* TinyWM (C) 2005 Nick Welch
- *
- * Usage of the works is permitted provided that this
- * instrument is retained with the works, so that any entity
- * that uses the works is notified of this instrument.
- *
- * DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
- */
+// TinyWM (C) 2005 Nick Welch
+//
+// Usage of the works is permitted provided that this
+// instrument is retained with the works, so that any entity
+// that uses the works is notified of this instrument.
+//
+// DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
 
 /* much of tinywm's purpose is to serve as a very basic example of how to do X
  * stuff and/or understand window managers, so i wanted to put comments in the
@@ -24,30 +23,11 @@
  */
 #include <X11/Xlib.h>
 
-/* return whichever is smaller */
-#define MIN(a, b) ((a) > (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-/* one annoying thing about Xlib is that function argument lists tend to
- * include everything but the kitchen sink, and a lot of times you don't have a
- * use for every single argument.  so you end up passing a lot of 'dummy' or
- * 'junk' (i.e. temporary, unused) pointers to variables that you'll never
- * inspect after the function call.  that's what these are.
- */
-Window w;
-int i;         /* <- unused dummies */
-unsigned u;
-
-/* these are the three "modes" our little window manager has.  nothing about X
- * or Xlib really mandates this; it's just a simple way of keeping track of
- * what exactly is happening.
- */
-enum { NORMAL, MOVING, RESIZING };
-
-int main(void)
+int main()
 {
     Display * dpy = XOpenDisplay(0); /* returns NULL if it can't connect to X */
-    Window root;
-    KeyCode f1;
 
     if(!dpy) return 1; /* return failure status if we can't connect */
 
@@ -65,12 +45,12 @@ int main(void)
      * if they set $DISPLAY to ":0.foo", then our default screen number is
      * whatever they specify "foo" as.
      */
-    root = DefaultRootWindow(dpy);
+    Window root = DefaultRootWindow(dpy);
 
-    /* you could also include keysym.h and use the XK_F1 constant instead of the
-     * call to XStringToKeysym, but this method is more "dynamic."  imagine you
-     * have config files which specify key bindings.  instead of parsing the key
-     * names and having a huge table or whatever to map strings to XK_*
+    /* you could also include keysym.h and use the XK_F1 constant instead of
+     * the call to XStringToKeysym, but this method is more "dynamic."  imagine
+     * you have config files which specify key bindings.  instead of parsing
+     * the key names and having a huge table or whatever to map strings to XK_*
      * constants, you can just take the user-specified string and hand it off
      * to XStringToKeysym.  XStringToKeysym will give you back the appropriate
      * keysym or tell you if it's an invalid key name.
@@ -82,7 +62,8 @@ int main(void)
      * to X.  so we never want to hard-code keycodes, because they can and will
      * differ between systems.
      */
-    f1 = XKeysymToKeycode(dpy, XStringToKeysym("F1"));
+    XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask, root,
+            True, GrabModeAsync, GrabModeAsync);
 
     /* XGrabKey and XGrabButton are basically ways of saying "when this
      * combination of modifiers and key/button is pressed, send me the events."
@@ -92,45 +73,42 @@ int main(void)
      * XSelectInput with KeyPressMask/ButtonPressMask/etc to catch all events
      * of those types and filter them as you receive them.
      */
-    XGrabKey(dpy, f1, Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
     XGrabButton(dpy, 1, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
             GrabModeAsync, None, None);
     XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
             GrabModeAsync, None, None);
 
+    XWindowAttributes attr;
+
+    /* we use this to save the pointer's state at the beginning of the
+     * move/resize.
+     */
+    XButtonEvent start;
+    XEvent ev;
     for(;;)
     {
-        /* these are declared static down here simply because i hate having
-         * declarations so far away from where variables actually get used.
-         *
-         * initialpx and initialpy are where we save the position of our pointer
-         * when you first enter moving/resizing mode.
-         */
-        static int mode = NORMAL, initialpx, initialpy;
-
-        /* we save the window's position and size in this at the same point
-         * that we save initialp{x,y}.
-         */
-        static XWindowAttributes initial;
-
         /* this is the most basic way of looping through X events; you can be
          * more flexible by using XPending(), or ConnectionNumber() along with
          * select() (or poll() or whatever floats your boat).
          */
-        static XEvent ev;
         XNextEvent(dpy, &ev);
 
-        /* i was a little confused about .window vs. .subwindow for a while,
+        /* this is our keybinding for raising windows.  as i saw someone
+         * mention on the ratpoison wiki, it is pretty stupid; however, i
+         * wanted to fit some sort of keyboard binding in here somewhere, and
+         * this was the best fit for it.
+         *
+         * i was a little confused about .window vs. .subwindow for a while,
          * but a little RTFMing took care of that.  our passive grabs above
          * grabbed on the root window, so since we're only interested in events
          * for its child windows, we look at .subwindow.  when subwindow ==
          * None, that means that the window the event happened in was the same
          * window that was grabbed on -- in this case, the root window.
          */
-        if(ev.type == ButtonPress && ev.xbutton.subwindow != None)
+        if(ev.type == KeyPress && ev.xkey.subwindow != None)
+            XRaiseWindow(dpy, ev.xkey.subwindow);
+        else if(ev.type == ButtonPress && ev.xbutton.subwindow != None)
         {
-            mode = (ev.xbutton.button == 1) ? MOVING : RESIZING;
-
             /* now we take command of the pointer, looking for motion and
              * button release events.
              */
@@ -138,13 +116,13 @@ int main(void)
                     PointerMotionMask|ButtonReleaseMask, GrabModeAsync,
                     GrabModeAsync, None, None, CurrentTime);
 
-            /* we also "remember" the position of the pointer at the beginning
-             * of our move/resize, and the size/position of the window.  that
-             * way, when the pointer moves, we can compare it to our initial
-             * data and move/resize accordingly.
+            /* we "remember" the position of the pointer at the beginning of
+             * our move/resize, and the size/position of the window.  that way,
+             * when the pointer moves, we can compare it to our initial data
+             * and move/resize accordingly.
              */
-            XQueryPointer(dpy, root, &w, &w, &initialpx, &initialpy, &i, &i,&u);
-            XGetWindowAttributes(dpy, ev.xbutton.subwindow, &initial);
+            XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
+            start = ev.xbutton;
         }
         /* the only way we'd receive a motion notify event is if we already did
          * a pointer grab and we're in move/resize mode, so we assume that. */
@@ -166,13 +144,11 @@ int main(void)
             /* now we use the stuff we saved at the beginning of the
              * move/resize and compare it to the pointer's current position to
              * determine what the window's new size or position should be.
-             */
-            if(mode == MOVING)
-                XMoveWindow(dpy, ev.xmotion.window,
-                        initial.x + ev.xmotion.x_root - initialpx,
-                        initial.y + ev.xmotion.y_root - initialpy);
-
-            /* we also make sure not to go negative with the window's
+             *
+             * if the initial button press was button 1, then we're moving.
+             * otherwise it was 3 and we're resizing.
+             *
+             * we also make sure not to go negative with the window's
              * dimensions, resulting in "wrapping" which will make our window
              * something ridiculous like 65000 pixels wide (often accompanied
              * by lots of swapping and slowdown).
@@ -181,28 +157,20 @@ int main(void)
              * exactly zero, triggering an X error.  so we specify a minimum
              * width/height of 1 pixel.
              */
-            else /* mode == RESIZING */
-                XResizeWindow(dpy, ev.xmotion.window,
-                        MIN(1, initial.width + ev.xmotion.x_root - initialpx),
-                        MIN(1, initial.height + ev.xmotion.y_root - initialpy));
+            int xdiff = ev.xbutton.x_root - start.x_root;
+            int ydiff = ev.xbutton.y_root - start.y_root;
+            XMoveResizeWindow(dpy, ev.xmotion.window,
+                attr.x + (start.button==1 ? xdiff : 0),
+                attr.y + (start.button==1 ? ydiff : 0),
+                MAX(1, attr.width + (start.button==3 ? xdiff : 0)),
+                MAX(1, attr.height + (start.button==3 ? ydiff : 0)));
         }
         /* like motion notifies, the only way we'll receive a button release is
          * during a move/resize, due to our pointer grab.  this ends the
          * move/resize.
          */
         else if(ev.type == ButtonRelease)
-        {
-            mode = NORMAL;
             XUngrabPointer(dpy, CurrentTime);
-        }
-        /* this is our keybinding for raising windows.  as i saw someone
-         * mention on the ratpoison wiki, it is pretty stupid; however, i
-         * wanted to fit some sort of keyboard binding in here somewhere, and
-         * this was the best fit for it.
-         */
-        else if(ev.type == KeyPress && ev.xkey.subwindow != None &&
-                ev.xkey.keycode == f1 && ev.xkey.state == Mod1Mask)
-            XRaiseWindow(dpy, ev.xkey.subwindow);
     }
 }
 
