@@ -1,10 +1,10 @@
-// TinyWM (C) 2005 Nick Welch
-//
-// Use of the works is permitted provided that this instrument
-// is retained with the works, so that any entity that uses the
-// works is notified of this instrument.
-//
-// DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
+/* TinyWM (C) 2005 Nick Welch
+ *
+ * Use of the works is permitted provided that this instrument
+ * is retained with the works, so that any entity that uses the
+ * works is notified of this instrument.
+ *
+ * DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY. */
 
 #include <X11/Xlib.h>
 
@@ -13,10 +13,11 @@
 int main()
 {
     Display * dpy = XOpenDisplay(0);
+    Window root;
 
     if(!dpy) return 1;
 
-    Window root = DefaultRootWindow(dpy);
+    root = DefaultRootWindow(dpy);
 
     XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask, root,
             True, GrabModeAsync, GrabModeAsync);
@@ -25,11 +26,12 @@ int main()
     XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
             GrabModeAsync, None, None);
 
-    XWindowAttributes attr;
-    XButtonEvent start;
-    XEvent ev;
     for(;;)
     {
+        static XWindowAttributes attr;
+        static XButtonEvent start;
+        static XEvent ev;
+
         XNextEvent(dpy, &ev);
         if(ev.type == KeyPress && ev.xkey.subwindow != None)
             XRaiseWindow(dpy, ev.xkey.subwindow);
@@ -43,9 +45,10 @@ int main()
         }
         else if(ev.type == MotionNotify)
         {
+            int xdiff, ydiff;
             while(XCheckTypedEvent(dpy, MotionNotify, &ev));
-            int xdiff = ev.xbutton.x_root - start.x_root;
-            int ydiff = ev.xbutton.y_root - start.y_root;
+            xdiff = ev.xbutton.x_root - start.x_root;
+            ydiff = ev.xbutton.y_root - start.y_root;
             XMoveResizeWindow(dpy, ev.xmotion.window,
                 attr.x + (start.button==1 ? xdiff : 0),
                 attr.y + (start.button==1 ? ydiff : 0),
