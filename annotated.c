@@ -1,10 +1,10 @@
-// TinyWM (C) 2005 Nick Welch
-//
-// Use of the works is permitted provided that this instrument
-// is retained with the works, so that any entity that uses the
-// works is notified of this instrument.
-//
-// DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY.
+/* TinyWM (C) 2005 Nick Welch
+ *
+ * Use of the works is permitted provided that this instrument
+ * is retained with the works, so that any entity that uses the
+ * works is notified of this instrument.
+ *
+ * DISCLAIMER: THE WORKS ARE WITHOUT WARRANTY. */
 
 /* much of tinywm's purpose is to serve as a very basic example of how to do X
  * stuff and/or understand window managers, so i wanted to put comments in the
@@ -28,6 +28,7 @@
 int main()
 {
     Display * dpy = XOpenDisplay(0); /* returns NULL if it can't connect to X */
+    Window root;
 
     if(!dpy) return 1; /* return failure status if we can't connect */
 
@@ -45,7 +46,7 @@ int main()
      * if they set $DISPLAY to ":0.foo", then our default screen number is
      * whatever they specify "foo" as.
      */
-    Window root = DefaultRootWindow(dpy);
+    root = DefaultRootWindow(dpy);
 
     /* you could also include keysym.h and use the XK_F1 constant instead of
      * the call to XStringToKeysym, but this method is more "dynamic."  imagine
@@ -78,15 +79,19 @@ int main()
     XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync,
             GrabModeAsync, None, None);
 
-    XWindowAttributes attr;
-
-    /* we use this to save the pointer's state at the beginning of the
-     * move/resize.
-     */
-    XButtonEvent start;
-    XEvent ev;
     for(;;)
     {
+        /* i declare these as static down here because i hate declaring things
+         * in a completely different area from where they're used
+         */
+        static XWindowAttributes attr;
+
+        /* we use this to save the pointer's state at the beginning of the
+         * move/resize.
+         */
+        static XButtonEvent start;
+        static XEvent ev;
+
         /* this is the most basic way of looping through X events; you can be
          * more flexible by using XPending(), or ConnectionNumber() along with
          * select() (or poll() or whatever floats your boat).
@@ -128,6 +133,8 @@ int main()
          * a pointer grab and we're in move/resize mode, so we assume that. */
         else if(ev.type == MotionNotify)
         {
+            int xdiff, ydiff;
+
             /* here we "compress" motion notify events.  if there are 10 of
              * them waiting, it makes no sense to look at any of them but the
              * most recent.  in some cases -- if the window is really big or
@@ -157,8 +164,8 @@ int main()
              * exactly zero, triggering an X error.  so we specify a minimum
              * width/height of 1 pixel.
              */
-            int xdiff = ev.xbutton.x_root - start.x_root;
-            int ydiff = ev.xbutton.y_root - start.y_root;
+            xdiff = ev.xbutton.x_root - start.x_root;
+            ydiff = ev.xbutton.y_root - start.y_root;
             XMoveResizeWindow(dpy, ev.xmotion.window,
                 attr.x + (start.button==1 ? xdiff : 0),
                 attr.y + (start.button==1 ? ydiff : 0),
