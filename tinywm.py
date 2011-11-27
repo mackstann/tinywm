@@ -18,7 +18,7 @@ dpy.screen().root.grab_button(3, X.Mod1Mask, 1, X.ButtonPressMask|X.PointerMotio
 while 1:
     ev = dpy.next_event()
     if ev.type == X.KeyPress and ev.child != X.NONE:
-        ev.window.configure(stack_mode = X.Above)
+        ev.child.configure(stack_mode = X.Above)
     elif ev.type == X.ButtonPress and ev.child != X.NONE:
         print 'press'
         attr = ev.child.get_geometry()
