@@ -21,11 +21,9 @@ while 1:
     if ev.type == X.KeyPress and ev.child != X.NONE:
         ev.child.configure(stack_mode = X.Above)
     elif ev.type == X.ButtonPress and ev.child != X.NONE:
-        print 'press'
         attr = ev.child.get_geometry()
         start = ev
     elif ev.type == X.MotionNotify and start:
-        print 'motion'
         xdiff = ev.root_x - start.root_x
         ydiff = ev.root_y - start.root_y
         start.child.configure(
