@@ -22,26 +22,15 @@ Usage:
 
 Misc:
   
-  A fella by the name of Trent Buck made a lisp version:
-
-    http://twb.ath.cx/~twb/src/misc/tinywm.lisp
-
-  I have started a wiki about window manager development, although I'm not sure
-  the subject is popular enough for the wiki to keep from dying a horrible
-  death.  In any case, it is here:
-
-    http://riters.com/WMDev/
-
   Another very small window manager is failsafewm.  Originally I started
   hacking on it, as there was quite a bit of stuff in it that I thought was
-  unneeded, and I wound up rewriting it from scratch, with just the bare
-  necessities -- that's TinyWM.
+  unneeded.  I wound up rewriting it from scratch, with just the bare
+  necessities, and that became TinyWM.
 
     http://freshmeat.net/projects/failsafewm/
 
-  Yet another small -- but in comparison, big -- window manager is aewm.  It's
-  a good example for learning about window management, and the fact that so
-  many WMs have spawned from it is proof.
+  Yet another small -- but in comparison to TinyWM, big -- window manager is
+  aewm.  It's a good example for learning about writing a window manager.
 
       http://www.red-bean.com/~decklin/aewm/
 
