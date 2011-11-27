@@ -1,4 +1,4 @@
-TinyWM is written by Nick Welch <mack@incise.org> in 2005 & 2011.
+TinyWM is written by Nick Welch <nick@incise.org> in 2005 & 2011.
 
 TinyWM is a ridiculously tiny window manager implemented in nearly as few lines
 of C as possible, without being obfuscated or entirely useless. It allows you
