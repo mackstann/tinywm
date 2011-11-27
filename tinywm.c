@@ -19,9 +19,9 @@ int main(void)
     XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask,
             DefaultRootWindow(dpy), True, GrabModeAsync, GrabModeAsync);
     XGrabButton(dpy, 1, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
     XGrabButton(dpy, 3, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
 
     for(;;)
     {

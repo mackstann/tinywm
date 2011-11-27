@@ -79,9 +79,9 @@ int main(void)
      * of those types and filter them as you receive them.
      */
     XGrabButton(dpy, 1, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
     XGrabButton(dpy, 3, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
 
     for(;;)
     {

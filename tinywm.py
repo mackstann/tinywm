@@ -10,9 +10,9 @@ dpy = Display()
 
 dpy.screen().root.grab_key(dpy.keysym_to_keycode(XK.string_to_keysym("F1")), X.Mod1Mask, 1,
         X.GrabModeAsync, X.GrabModeAsync)
-dpy.screen().root.grab_button(1, X.Mod1Mask, 1, X.PointerMotionMask,
+dpy.screen().root.grab_button(1, X.Mod1Mask, 1, X.ButtonPressMask|X.PointerMotionMask,
         X.GrabModeAsync, X.GrabModeAsync, X.NONE, X.NONE)
-dpy.screen().root.grab_button(3, X.Mod1Mask, 1, X.PointerMotionMask,
+dpy.screen().root.grab_button(3, X.Mod1Mask, 1, X.ButtonPressMask|X.PointerMotionMask,
         X.GrabModeAsync, X.GrabModeAsync, X.NONE, X.NONE)
 
 while 1:
