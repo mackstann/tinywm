@@ -19,10 +19,11 @@ int main(void)
     XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask,
             DefaultRootWindow(dpy), True, GrabModeAsync, GrabModeAsync);
     XGrabButton(dpy, 1, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
     XGrabButton(dpy, 3, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
 
+    start.subwindow = None;
     for(;;)
     {
         XNextEvent(dpy, &ev);
@@ -33,7 +34,7 @@ int main(void)
             XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
             start = ev.xbutton;
         }
-        else if(ev.type == MotionNotify)
+        else if(ev.type == MotionNotify && start.subwindow != None)
         {
             int xdiff = ev.xbutton.x_root - start.x_root;
             int ydiff = ev.xbutton.y_root - start.y_root;
@@ -42,6 +43,10 @@ int main(void)
                 attr.y + (start.button==1 ? ydiff : 0),
                 MAX(1, attr.width + (start.button==3 ? xdiff : 0)),
                 MAX(1, attr.height + (start.button==3 ? ydiff : 0)));
+        }
+        else if(ev.type == ButtonRelease)
+        {
+            start.subwindow = None;
         }
     }
 }

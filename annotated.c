@@ -79,10 +79,11 @@ int main(void)
      * of those types and filter them as you receive them.
      */
     XGrabButton(dpy, 1, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
     XGrabButton(dpy, 3, Mod1Mask, DefaultRootWindow(dpy), True,
-            PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
+            ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, None, None);
 
+    start.subwindow = None;
     for(;;)
     {
         /* this is the most basic way of looping through X events; you can be
@@ -115,9 +116,9 @@ int main(void)
             XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
             start = ev.xbutton;
         }
-        /* the only way we'd receive a motion notify event is if we already did
-         * a pointer grab and we're in move/resize mode, so we assume that. */
-        else if(ev.type == MotionNotify)
+        /* we only get motion events when a button is being pressed,
+         * but we still have to check that the drag started on a window */
+        else if(ev.type == MotionNotify && start.subwindow != None)
         {
             /* here we could "compress" motion notify events by doing:
              *
@@ -159,6 +160,10 @@ int main(void)
                 attr.y + (start.button==1 ? ydiff : 0),
                 MAX(1, attr.width + (start.button==3 ? xdiff : 0)),
                 MAX(1, attr.height + (start.button==3 ? ydiff : 0)));
+        }
+        else if(ev.type == ButtonRelease)
+        {
+            start.subwindow = None;
         }
     }
 }
