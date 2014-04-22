@@ -45,9 +45,7 @@ int main(void)
                 MAX(1, attr.height + (start.button==3 ? ydiff : 0)));
         }
         else if(ev.type == ButtonRelease)
-        {
             start.subwindow = None;
-        }
     }
 }
 
