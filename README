@@ -12,10 +12,7 @@ basics.
 Files:
 
   Makefile: highly advanced build system
-  tinywm.c: The C version
-  annotated.c: The annotated C
   tinywm.py: The Python code (requires CVS python-xlib due to a bug)
-  annotated.py: The annotated Python
 
 Usage:
 
