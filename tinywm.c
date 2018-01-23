@@ -48,4 +48,3 @@ int main(void)
             start.subwindow = None;
     }
 }
-
