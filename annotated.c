@@ -105,7 +105,13 @@ int main(void)
          * window that was grabbed on -- in this case, the root window.
          */
         if(ev.type == KeyPress && ev.xkey.subwindow != None)
+        {
             XRaiseWindow(dpy, ev.xkey.subwindow);
+            /* this is change input focus (for example: keyboard) to target window.
+             * if window closed revert focus to parent window.
+             */
+            XSetInputFocus(dpy, ev.xkey.subwindow, RevertToParent, CurrentTime);
+        }
         else if(ev.type == ButtonPress && ev.xbutton.subwindow != None)
         {
             /* we "remember" the position of the pointer at the beginning of
