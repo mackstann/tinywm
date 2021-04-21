@@ -27,10 +27,10 @@ while 1:
         xdiff = ev.root_x - start.root_x
         ydiff = ev.root_y - start.root_y
         start.child.configure(
-            x = attr.x + (start.detail == 1 and xdiff or 0),
-            y = attr.y + (start.detail == 1 and ydiff or 0),
-            width = max(1, attr.width + (start.detail == 3 and xdiff or 0)),
-            height = max(1, attr.height + (start.detail == 3 and ydiff or 0)))
+            x = attr.x + (xdiff if start.detail == 1 else 0),
+            y = attr.y + (ydiff if start.detail == 1 else 0),
+            width = max(1, attr.width + (xdiff if start.detail == 3 else 0)),
+            height = max(1, attr.height + (ydiff if start.detail == 3 else 0)))
     elif ev.type == X.ButtonRelease:
         start = None
 
